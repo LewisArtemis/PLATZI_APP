@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Platzi Store{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #000000ff 0%, #09398bff 25%, #4f79a4 45%, #000000ff 75%, #000000ff 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(63, 190, 207, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            background: rgba(30, 58, 138, 0.9) !important;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px 0 rgba(30, 58, 138, 0.4);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .navbar-brand, .nav-link {
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        .nav-link:hover {
+            color: rgba(147, 197, 253, 1) !important;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(224, 38, 230, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px 0 rgba(30, 58, 138, 0.4);
+            background: rgba(37, 99, 235, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+            background: linear-gradient(135deg, #c27542ff 0%, #2563eb 50%, #3b82f6 100%);
+        }
+        
+        .btn-outline-secondary {
+            border: 2px solid rgba(59, 130, 246, 0.6);
+            color: rgba(59, 130, 246, 0.9);
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.8);
+            color: rgba(30, 58, 138, 1);
+            transform: translateY(-2px);
+        }
+        
+        .hero-section {
+            padding: 100px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(30, 58, 138, 0.5);
+            background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 50%, #b3e5fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            text-shadow: 1px 1px 3px rgba(30, 58, 138, 0.3);
+        }
+        
+        .product-price {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .category-badge {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(55, 48, 163, 0.3);
+        }
+        
+        .text-dark {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .bg-light {
+            background: rgba(2, 6, 23, 0.6) !important;
+            border: 1px solid rgba(6, 182, 212, 0.15);
+        }
+        
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.7) !important;
+            text-decoration: none;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: rgba(34, 211, 238, 1) !important;
+        }
+        
+        .alert {
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .text-muted {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <i class="fas fa-store me-2"></i>Platzi Store
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i>Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="{% url 'products:products_list' %}">
+                            <i class="fas fa-shopping-bag me-1"></i>Productos
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-5 pt-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 text-center text-white">
+        <div class="container">
+            <p class="mb-0">&copy; 2024 Platzi Store. Proyecto de aprendizaje con Django y APIs.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

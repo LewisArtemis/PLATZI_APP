@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+
+{% block title %}Productos - Platzi Store{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    
+    <h1 class="text-white mb-4">Lista de Productos</h1>
+
+    <div class="card p-4 mb-4">
+        <h4 class="text-white-50">Buscar producto</h4>
+        <form method="get" class="row g-3 align-items-end">
+            
+            <div class="col-md-4">
+                <label for="category_name" class="form-label text-white-50">Nombre de Categoría</label>
+                <input type="text" class="form-control" id="category_name" name="category_name" placeholder="Ej. Electronics">
+            </div>
+            
+            <div class="col-md-4">
+                <label for="product_title" class="form-label text-white-50">Nombre del Producto</label>
+                <input type="text" class="form-control" id="product_title" name="product_title" placeholder="Ej. Camisa de algodón">
+            </div>
+            
+            
+            <div>
+                <button type="submit" class="btn btn-primary mb-2">
+                    <i class="fas fa-search me-2"></i>Buscar
+                </button>
+                
+                <a href="{% url 'products:products_list' %}" class="btn btn-outline-secondary mb-2">
+                    <i class="fas fa-redo me-2"></i>Resetear Filtros
+                </a>
+                
+                <a href="{% url 'products:products_add' %}" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-2"></i>Agregar Producto
+                </a>
+            </div>
+            
+        </form>
+    </div>
+    
+    <div class="row" id="products-container">
+        {% if products %}
+            {% for product in products %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4" data-product-id="{{ product.id }}">
+                <div class="card h-100">
+                    <a href="{% url 'products:products_detail' pk=product.id %}" class="card-link text-decoration-none text-dark">
+                        <img src="{{ product.images.0 }}" class="card-img-top img-fluid" alt="{{ product.title }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            {% if product.category %}
+                                <span class="category-badge">{{ product.category.name }}</span>
+                            {% endif %}
+                            <h5 class="card-title text-dark mt-2">{{ product.title|truncatechars:30 }}</h5>
+                            <span class="product-price">${{ product.price }}</span>
+                        </div>
+                    </a>
+                    <div class="card-footer d-grid gap-2">
+                        <a href="{% url 'products:products_detail' pk=product.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-info-circle me-2"></i>Ver Detalle
+                        </a>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-warning btn-sm btn-update" data-product-id="{{ product.id }}">
+                                <i class="fas fa-edit me-1"></i>Actualizar
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-product-id="{{ product.id }}">
+                                <i class="fas fa-trash me-1"></i>Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center" role="alert">
+                    No se encontraron productos.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal para actualizar producto -->
+<div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Actualizar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateForm">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="updateTitle" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="updateTitle" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="updateDescription" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="updateDescription" rows="3" required></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="updatePrice" class="form-label">Precio</label>
+                                        <input type="number" class="form-control" id="updatePrice" step="0.01" min="0" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="updateCategory" class="form-label">ID de Categoría</label>
+                                        <input type="number" class="form-control" id="updateCategory" min="1" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="updateImage" class="form-label">URL de la Imagen</label>
+                                <input type="url" class="form-control" id="updateImage" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <small class="text-muted">Vista Previa Actual</small>
+                                </div>
+                                <div class="card-body p-2">
+                                    <img id="currentProductImage" src="" class="img-fluid rounded mb-2" style="height: 150px; width: 100%; object-fit: cover;">
+                                    <h6 id="currentProductTitle" class="text-dark small"></h6>
+                                    <p id="currentProductPrice" class="text-success fw-bold small mb-0"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmUpdate">
+                    <i class="fas fa-save me-2"></i>Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para eliminar producto -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Producto
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="deleteProductImage" src="" class="img-fluid rounded" style="max-height: 150px;">
+                </div>
+                <h5 id="deleteProductTitle" class="text-center mb-3"></h5>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>¿Estás seguro que deseas eliminar este producto?</strong>
+                    <br>Esta acción no se puede deshacer.
+                </div>
+                <div id="deleteProductInfo">
+                    <!-- Información del producto se carga aquí -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    <i class="fas fa-trash me-2"></i>Sí, Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast para notificaciones -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="notificationToast" class="toast" role="alert">
+        <div class="toast-header">
+            <i id="toastIcon" class="fas fa-info-circle me-2"></i>
+            <strong id="toastTitle" class="me-auto">Notificación</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            <!-- Mensaje se carga aquí -->
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentProductId = null;
+    const updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const notificationToast = new bootstrap.Toast(document.getElementById('notificationToast'));
+
+    // Función para mostrar notificaciones
+    function showNotification(message, type = 'info') {
+        const toast = document.getElementById('notificationToast');
+        const toastHeader = toast.querySelector('.toast-header');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Configurar colores y iconos según el tipo
+        toastHeader.className = 'toast-header';
+        if (type === 'success') {
+            toastHeader.classList.add('bg-success', 'text-white');
+            toastIcon.className = 'fas fa-check-circle me-2';
+            toastTitle.textContent = 'Éxito';
+        } else if (type === 'error') {
+            toastHeader.classList.add('bg-danger', 'text-white');
+            toastIcon.className = 'fas fa-exclamation-circle me-2';
+            toastTitle.textContent = 'Error';
+        } else {
+            toastIcon.className = 'fas fa-info-circle me-2';
+            toastTitle.textContent = 'Información';
+        }
+
+        toastMessage.textContent = message;
+        notificationToast.show();
+    }
+
+    // Manejar clics en botones de actualizar
+    document.querySelectorAll('.btn-update').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            currentProductId = productId;
+
+            // Cargar datos del producto
+            fetch(`/products/${productId}/update-ajax/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const product = data.product;
+                        document.getElementById('updateTitle').value = product.title || '';
+                        document.getElementById('updateDescription').value = product.description || '';
+                        document.getElementById('updatePrice').value = product.price || 0;
+                        document.getElementById('updateCategory').value = product.category?.id || 1;
+                        document.getElementById('updateImage').value = product.images?.[0] || '';
+
+                        // Vista previa
+                        document.getElementById('currentProductImage').src = product.images?.[0] || '';
+                        document.getElementById('currentProductTitle').textContent = product.title || '';
+                        document.getElementById('currentProductPrice').textContent = `$${product.price || 0}`;
+
+                        updateModal.show();
+                    } else {
+                        showNotification(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Error al cargar el producto', 'error');
+                });
+        });
+    });
+
+    // Manejar clics en botones de eliminar
+    document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            currentProductId = productId;
+
+            // Cargar datos del producto
+            fetch(`/products/${productId}/delete-ajax/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const product = data.product;
+                        document.getElementById('deleteProductImage').src = product.images?.[0] || '';
+                        document.getElementById('deleteProductTitle').textContent = product.title || '';
+                        
+                        const productInfo = `
+                            <p><strong>Precio:</strong> $${product.price || 0}</p>
+                            <p><strong>Descripción:</strong> ${(product.description || '').substring(0, 100)}...</p>
+                            ${product.category ? `<p><strong>Categoría:</strong> ${product.category.name}</p>` : ''}
+                        `;
+                        document.getElementById('deleteProductInfo').innerHTML = productInfo;
+
+                        deleteModal.show();
+                    } else {
+                        showNotification(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Error al cargar el producto', 'error');
+                });
+        });
+    });
+
+    // Confirmar actualización
+    document.getElementById('confirmUpdate').addEventListener('click', function() {
+        const formData = {
+            title: document.getElementById('updateTitle').value,
+            description: document.getElementById('updateDescription').value,
+            price: document.getElementById('updatePrice').value,
+            category: document.getElementById('updateCategory').value,
+            image: document.getElementById('updateImage').value
+        };
+
+        fetch(`/products/${currentProductId}/update-ajax/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateModal.hide();
+                showNotification(data.message, 'success');
+                // Recargar la página para ver los cambios
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Error al actualizar el producto', 'error');
+        });
+    });
+
+    // Confirmar eliminación
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+        fetch(`/products/${currentProductId}/delete-ajax/`, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                deleteModal.hide();
+                showNotification(data.message, 'success');
+                // Remover el producto de la vista
+                const productCard = document.querySelector(`[data-product-id="${currentProductId}"]`);
+                if (productCard) {
+                    productCard.remove();
+                }
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Error al eliminar el producto', 'error');
+        });
+    });
+});
+</script>
+{% endblock %}
