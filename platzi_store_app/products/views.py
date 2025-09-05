@@ -19,42 +19,52 @@ def products_list_view(request):
     por nombre de categoría o nombre de producto.
     """
     products = []
+    categories = []
+    
+    # Obtener las categorías para el dropdown
+    try:
+        categories_response = requests.get(f"{base_url}categories/")
+        if categories_response.status_code == 200:
+            categories = categories_response.json()
+    except requests.exceptions.RequestException as e:
+        messages.error(request, f'Error al cargar categorías: {str(e)}')
     
     # Obtener los parámetros de la URL
     product_title = request.GET.get('product_title')
-    category_name = request.GET.get('category_name')
+    category_id = request.GET.get('category_id')  # Cambio: ahora usamos category_id
 
     try:
         # Búsqueda por nombre de producto
         if product_title:
-            response = requests.get(f"{base_url}products/?title={product_title}")
+            # Obtener todos los productos y filtrar por título
+            response = requests.get(f"{base_url}products/")
             if response.status_code == 200:
-                products = response.json()
+                all_products = response.json()
+                # Filtrar productos que contengan el título buscado (case insensitive)
+                products = [p for p in all_products if product_title.lower() in p.get('title', '').lower()]
                 if not products:
                     messages.warning(request, f"No se encontraron productos con el nombre: '{product_title}'")
-            else:
-                messages.error(request, f"Error al buscar productos por nombre. Código de estado: {response.status_code}")
-                
-        # Búsqueda por nombre de categoría
-        elif category_name:
-            # Primero, buscar el ID de la categoría por su nombre
-            category_response = requests.get(f"{base_url}categories/?name={category_name}")
-            if category_response.status_code == 200:
-                categories = category_response.json()
-                if categories:
-                    # Suponemos que el primer resultado es el correcto
-                    category_id = categories[0]['id']
-                    # Ahora, buscar los productos por el ID de la categoría
-                    products_response = requests.get(f"{base_url}categories/{category_id}/products")
-                    if products_response.status_code == 200:
-                        products = products_response.json()
-                        messages.success(request, f"Mostrando productos de la categoría: '{category_name}'")
-                    else:
-                        messages.error(request, f"Error al buscar productos por categoría. Código de estado: {products_response.status_code}")
                 else:
-                    messages.warning(request, f"No se encontró una categoría con el nombre: '{category_name}'")
+                    messages.success(request, f"Se encontraron {len(products)} productos con '{product_title}'")
             else:
-                messages.error(request, f"Error al buscar la categoría por nombre. Código de estado: {category_response.status_code}")
+                messages.error(request, f"Error al buscar productos. Código de estado: {response.status_code}")
+                
+        # Búsqueda por ID de categoría
+        elif category_id:
+            try:
+                category_id_int = int(category_id)
+                # Buscar productos por ID de categoría
+                products_response = requests.get(f"{base_url}categories/{category_id_int}/products")
+                if products_response.status_code == 200:
+                    products = products_response.json()
+                    # Encontrar el nombre de la categoría seleccionada
+                    selected_category = next((cat for cat in categories if cat['id'] == category_id_int), None)
+                    category_name = selected_category['name'] if selected_category else 'Desconocida'
+                    messages.success(request, f"Mostrando {len(products)} productos de la categoría: '{category_name}'")
+                else:
+                    messages.error(request, f"Error al buscar productos por categoría. Código de estado: {products_response.status_code}")
+            except ValueError:
+                messages.error(request, "ID de categoría inválido")
 
         # Si no hay parámetros de búsqueda, mostrar todos los productos
         else:
@@ -67,7 +77,15 @@ def products_list_view(request):
     except requests.exceptions.RequestException as e:
         messages.error(request, f'Error de conexión con la API: {str(e)}')
     
-    return render(request, 'products/products_list.html', {'products': products})
+    # Pasar las categorías y los valores seleccionados al template
+    context = {
+        'products': products,
+        'categories': categories,
+        'selected_category_id': category_id,
+        'selected_product_title': product_title,
+    }
+    
+    return render(request, 'products/products_list.html', context)
 
 
 def products_detail_view(request, pk):
