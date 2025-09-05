@@ -3,41 +3,282 @@
 {% block title %}Inicio - Platzi Store{% endblock %}
 
 {% block content %}
-<div class="hero-section">
+<style>
+    /* Animaciones personalizadas */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    @keyframes slideInUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInScale {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -468px 0; }
+        100% { background-position: 468px 0; }
+    }
+
+    @keyframes rotateIcon {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Clases de animación */
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .animate-slide-up {
+        animation: slideInUp 0.8s ease-out;
+        animation-fill-mode: both;
+    }
+
+    .animate-fade-scale {
+        animation: fadeInScale 0.6s ease-out;
+        animation-fill-mode: both;
+    }
+
+    .animate-pulse {
+        animation: pulse 2s infinite;
+    }
+
+    .animate-delay-100 { animation-delay: 0.1s; }
+    .animate-delay-200 { animation-delay: 0.2s; }
+    .animate-delay-300 { animation-delay: 0.3s; }
+    .animate-delay-400 { animation-delay: 0.4s; }
+    .animate-delay-500 { animation-delay: 0.5s; }
+
+    /* Efectos hover mejorados */
+    .card-enhanced {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card-enhanced::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, 
+            rgba(59, 130, 246, 0.1) 0%, 
+            rgba(147, 197, 253, 0.2) 50%, 
+            rgba(59, 130, 246, 0.1) 100%);
+        transform: rotate(45deg);
+        transition: transform 0.6s ease;
+        z-index: -1;
+        opacity: 0;
+    }
+
+    .card-enhanced:hover::before {
+        transform: rotate(45deg) translate(50%, 50%);
+        opacity: 1;
+    }
+
+    .card-enhanced:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 25px 80px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Iconos animados */
+    .animated-icon {
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .card-enhanced:hover .animated-icon {
+        transform: scale(1.2) rotate(10deg);
+        color: #60a5fa !important;
+    }
+
+    /* Texto con efecto shimmer */
+    .shimmer-text {
+        background: linear-gradient(90deg, 
+            rgba(255, 255, 255, 0.9) 25%, 
+            rgba(147, 197, 253, 1) 50%, 
+            rgba(255, 255, 255, 0.9) 75%);
+        background-size: 400% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 3s infinite;
+    }
+
+    /* Partículas flotantes */
+    .particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+        z-index: -2;
+    }
+
+    .particle {
+        position: absolute;
+        background: rgba(59, 130, 246, 0.3);
+        border-radius: 50%;
+        animation: float 8s infinite linear;
+        pointer-events: none;
+    }
+
+    .particle:nth-child(1) {
+        width: 4px;
+        height: 4px;
+        left: 10%;
+        animation-delay: 0s;
+        animation-duration: 8s;
+    }
+
+    .particle:nth-child(2) {
+        width: 6px;
+        height: 6px;
+        left: 20%;
+        animation-delay: 2s;
+        animation-duration: 10s;
+    }
+
+    .particle:nth-child(3) {
+        width: 3px;
+        height: 3px;
+        left: 30%;
+        animation-delay: 4s;
+        animation-duration: 6s;
+    }
+
+    .particle:nth-child(4) {
+        width: 8px;
+        height: 8px;
+        left: 70%;
+        animation-delay: 1s;
+        animation-duration: 12s;
+    }
+
+    .particle:nth-child(5) {
+        width: 5px;
+        height: 5px;
+        left: 80%;
+        animation-delay: 3s;
+        animation-duration: 9s;
+    }
+
+    /* Botones con efectos avanzados */
+    .btn-enhanced {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        z-index: 1;
+    }
+
+    .btn-enhanced::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            transparent, 
+            rgba(255, 255, 255, 0.2), 
+            transparent);
+        transition: left 0.5s;
+        z-index: -1;
+    }
+
+    .btn-enhanced:hover::before {
+        left: 100%;
+    }
+
+    /* Contador animado */
+    .counter {
+        font-weight: bold;
+        color: #60a5fa;
+    }
+</style>
+
+<div class="hero-section position-relative">
+    <!-- Partículas flotantes -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
     <div class="container">
-        <h1 class="hero-title">
-            <i class="fas fa-store me-3"></i>
-            Bienvenido a Platzi Store
-        </h1>
-        <p class="hero-subtitle">
+        <div class="animate-fade-scale">
+            <h1 class="hero-title animate-float">
+                <i class="fas fa-store me-3 animated-icon"></i>
+                <span class="shimmer-text">Bienvenido a Platzi Store</span>
+            </h1>
+        </div>
+        
+        <p class="hero-subtitle animate-slide-up animate-delay-200">
             Descubre increíbles productos utilizando nuestra integración con APIs
         </p>
+        
         <div class="row justify-content-center mt-5">
             <div class="col-md-8">
                 <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="card h-100 p-4">
+                    <div class="col-md-6 animate-slide-up animate-delay-300">
+                        <div class="card card-enhanced h-100 p-4">
                             <div class="card-body text-center">
-                                <i class="fas fa-shopping-cart fa-3x text-primary mb-3"></i>
+                                <i class="fas fa-shopping-cart fa-3x text-primary mb-3 animated-icon"></i>
                                 <h4 class="text-dark">Explorar Productos</h4>
                                 <p class="text-muted">Navega por nuestra amplia colección de productos obtenidos en tiempo real.</p>
-                                <a href="{% url 'products:products_list' %}" class="btn btn-primary">
+                                <div class="mb-3">
+                                    <span class="counter" data-count="1000">0</span>
+                                    <small class="text-muted d-block">+ Productos Disponibles</small>
+                                </div>
+                                <a href="{% url 'products:products_list' %}" class="btn btn-primary btn-enhanced">
                                     <i class="fas fa-arrow-right me-2"></i>Ver Productos
                                 </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 p-4">
+                    <div class="col-md-6 animate-slide-up animate-delay-400">
+                        <div class="card card-enhanced h-100 p-4">
                             <div class="card-body text-center">
-                                <i class="fas fa-code fa-3x text-success mb-3"></i>
+                                <i class="fas fa-code fa-3x text-success mb-3 animated-icon"></i>
                                 <h4 class="text-dark">Tecnologías Utilizadas</h4>
                                 <p class="text-muted">Este proyecto utiliza Django como backend y consume APIs externas para mostrar datos dinámicos.</p>
-                                <div class="mt-3">
-                                    <span class="badge bg-primary me-2">Django</span>
-                                    <span class="badge bg-success me-2">API REST</span>
-                                    <span class="badge bg-info">Bootstrap</span>
+                                <div class="mt-3 mb-3">
+                                    <span class="badge bg-primary me-2 animate-pulse">Django</span>
+                                    <span class="badge bg-success me-2 animate-pulse animate-delay-100">API REST</span>
+                                    <span class="badge bg-info animate-pulse animate-delay-200">Bootstrap</span>
                                 </div>
+                                <button class="btn btn-success btn-enhanced" disabled>
+                                    <i class="fas fa-rocket me-2"></i>Tecnología Moderna
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -49,36 +290,101 @@
 
 <div class="container py-5">
     <div class="row">
-        <div class="col-12 text-center mb-5">
-            <h2 class="text-white mb-4">¿Qué encontrarás aquí?</h2>
+        <div class="col-12 text-center mb-5 animate-slide-up animate-delay-100">
+            <h2 class="text-white mb-4 shimmer-text">¿Qué encontrarás aquí?</h2>
+            <div class="mx-auto" style="width: 100px; height: 3px; background: linear-gradient(90deg, #1e40af, #3b82f6, #60a5fa); border-radius: 10px;"></div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
+        <div class="col-md-4 mb-4 animate-slide-up animate-delay-200">
+            <div class="card card-enhanced h-100">
                 <div class="card-body text-center">
-                    <i class="fas fa-mobile-alt fa-2x text-primary mb-3"></i>
+                    <i class="fas fa-mobile-alt fa-2x text-primary mb-3 animated-icon"></i>
                     <h5 class="text-dark">Electrónicos</h5>
                     <p class="text-muted">Smartphones, laptops y gadgets tecnológicos</p>
+                    <div class="mt-3">
+                        <span class="counter" data-count="150">0</span>
+                        <small class="text-muted d-block">Productos</small>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
+        <div class="col-md-4 mb-4 animate-slide-up animate-delay-300">
+            <div class="card card-enhanced h-100">
                 <div class="card-body text-center">
-                    <i class="fas fa-tshirt fa-2x text-success mb-3"></i>
+                    <i class="fas fa-tshirt fa-2x text-success mb-3 animated-icon"></i>
                     <h5 class="text-dark">Ropa y Moda</h5>
                     <p class="text-muted">Ropa para hombre y mujer de las mejores marcas</p>
+                    <div class="mt-3">
+                        <span class="counter" data-count="300">0</span>
+                        <small class="text-muted d-block">Productos</small>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
+        <div class="col-md-4 mb-4 animate-slide-up animate-delay-400">
+            <div class="card card-enhanced h-100">
                 <div class="card-body text-center">
-                    <i class="fas fa-gem fa-2x text-warning mb-3"></i>
+                    <i class="fas fa-gem fa-2x text-warning mb-3 animated-icon"></i>
                     <h5 class="text-dark">Joyería</h5>
                     <p class="text-muted">Accesorios elegantes para todas las ocasiones</p>
+                    <div class="mt-3">
+                        <span class="counter" data-count="75">0</span>
+                        <small class="text-muted d-block">Productos</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Contador animado
+    function animateCounters() {
+        const counters = document.querySelectorAll('.counter');
+        
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-count'));
+            const duration = 2000;
+            const increment = target / (duration / 16);
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    counter.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 16);
+        });
+    }
+
+    // Iniciar contadores cuando sean visibles
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounters();
+                observer.disconnect();
+            }
+        });
+    });
+
+    const countersSection = document.querySelector('.container.py-5');
+    if (countersSection) {
+        observer.observe(countersSection);
+    }
+
+    // Efecto parallax suave para partículas
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const particles = document.querySelectorAll('.particle');
+        
+        particles.forEach((particle, index) => {
+            const speed = (index + 1) * 0.1;
+            particle.style.transform = `translateY(${scrolled * speed}px)`;
+        });
+    });
+});
+</script>
 {% endblock %}
