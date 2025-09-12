@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home'),  # Página de inicio
     path('products/', include('products.urls')),
+    path('', include('accounts.urls')),
 ]
