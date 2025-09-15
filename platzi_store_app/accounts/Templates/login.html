@@ -1,235 +1,426 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Iniciar Sesión - Django Shop{% endblock %}
+{% block title %}Iniciar Sesión - Platzi Store{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6 col-lg-4">
-    <div class="auth-card">
-      <div class="auth-card-body">
-        <div class="text-center mb-4">
-          <div class="auth-icon">
-            <i class="fas fa-sign-in-alt fa-3x text-primary"></i>
-          </div>
-          <h2 class="auth-title">Iniciar Sesión</h2>
-          <p class="auth-subtitle">Accede a tu cuenta para continuar</p>
-        </div>
-        
-        <!-- Mostrar mensajes de error o éxito -->
-        {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-              {{ message }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          {% endfor %}
-        {% endif %}
-
-        <form method="post" novalidate class="auth-form">
-          {% csrf_token %}
-
-          <!-- Campo Username -->
-          <div class="mb-3">
-            <label for="{{ form.username.id_for_label }}" class="form-label">
-              <i class="fas fa-user text-primary"></i> {{ form.username.label }}
-            </label>
-            <div class="input-group">
-              <span class="input-group-text bg-primary text-white">
-                <i class="fas fa-user"></i>
-              </span>
-              {{ form.username }}
-            </div>
-            {% if form.username.errors %}
-              <div class="text-danger small mt-1">
-                {% for error in form.username.errors %}
-                  <div><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-                {% endfor %}
-              </div>
-            {% endif %}
-          </div>
-
-          <!-- Campo Password -->
-          <div class="mb-3">
-            <label for="{{ form.password.id_for_label }}" class="form-label">
-              <i class="fas fa-lock text-primary"></i> {{ form.password.label }}
-            </label>
-            <div class="input-group">
-              <span class="input-group-text bg-primary text-white">
-                <i class="fas fa-lock"></i>
-              </span>
-              {{ form.password }}
-              <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                <i class="fas fa-eye" id="eyeIcon"></i>
-              </button>
-            </div>
-            {% if form.password.errors %}
-              <div class="text-danger small mt-1">
-                {% for error in form.password.errors %}
-                  <div><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-                {% endfor %}
-              </div>
-            {% endif %}
-          </div>
-
-          <!-- Errores generales del formulario -->
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {% for error in form.non_field_errors %}
-                <i class="fas fa-exclamation-triangle"></i> {{ error }}
-              {% endfor %}
-            </div>
-          {% endif %}
-
-          <!-- Checkbox "Recordarme" -->
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="rememberMe">
-            <label class="form-check-label" for="rememberMe">
-              Recordarme por 30 días
-            </label>
-          </div>
-
-          <!-- Botón de login -->
-          <div class="d-grid gap-2 mb-3">
-            <button type="submit" class="btn btn-primary btn-lg auth-submit-btn">
-              <i class="fas fa-sign-in-alt"></i> Ingresar
-            </button>
-          </div>
-
-          <!-- Enlaces adicionales -->
-          <div class="text-center">           
-            <div class="auth-switch">
-              <p class="mb-2 text-muted">¿No tienes una cuenta?</p>
-              <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary">
-                <i class="fas fa-user-plus"></i> Crear cuenta nueva
-              </a>
-            </div>
-          </div>
-        </form>
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="store-icon">
+        <i class="fas fa-store fa-3x"></i>
       </div>
+      <h2 class="login-title">Iniciar Sesión</h2>
+      <p class="login-subtitle">Accede a Platzi Store para administrar productos</p>
     </div>
+    
+    <!-- Mostrar mensajes de error o éxito -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show custom-alert" role="alert">
+          <i class="fas fa-info-circle me-2"></i>{{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" novalidate class="login-form">
+      {% csrf_token %}
+
+      <!-- Campo Username -->
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label }}" class="form-label">
+          <i class="fas fa-user"></i> {{ form.username.label }}
+        </label>
+        <div class="input-container">
+          <div class="input-icon">
+            <i class="fas fa-user"></i>
+          </div>
+          {{ form.username }}
+        </div>
+        {% if form.username.errors %}
+          <div class="field-errors">
+            {% for error in form.username.errors %}
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Campo Password -->
+      <div class="form-group">
+        <label for="{{ form.password.id_for_label }}" class="form-label">
+          <i class="fas fa-lock"></i> {{ form.password.label }}
+        </label>
+        <div class="input-container">
+          <div class="input-icon">
+            <i class="fas fa-lock"></i>
+          </div>
+          {{ form.password }}
+          <button class="password-toggle" type="button" id="togglePassword">
+            <i class="fas fa-eye" id="eyeIcon"></i>
+          </button>
+        </div>
+        {% if form.password.errors %}
+          <div class="field-errors">
+            {% for error in form.password.errors %}
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Errores generales del formulario -->
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger custom-alert">
+          {% for error in form.non_field_errors %}
+            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Checkbox "Recordarme" -->
+      <div class="form-check-container">
+        <label class="custom-checkbox">
+          <input type="checkbox" id="rememberMe">
+          <span class="checkmark"></span>
+          Recordarme por 30 días
+        </label>
+      </div>
+
+      <!-- Botón de login -->
+      <button type="submit" class="login-btn">
+        <i class="fas fa-sign-in-alt"></i> Ingresar a Platzi Store
+      </button>
+
+      <!-- Enlaces adicionales -->
+      <div class="login-footer">
+        <div class="register-prompt">
+          <p>¿No tienes una cuenta?</p>
+          <a href="{% url 'accounts:register' %}" class="register-link">
+            <i class="fas fa-user-plus"></i> Crear cuenta nueva
+          </a>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
 
 <style>
-.auth-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+/* Estilos globales para el login */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+  padding: 2rem 1rem;
+  position: relative;
   overflow: hidden;
 }
 
-.auth-card-body {
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
   padding: 3rem 2.5rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  color: #333;
-  margin: 3px;
-  border-radius: 17px;
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
 }
 
-.auth-icon {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.login-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.store-icon {
+  color: #ffffff;
   margin-bottom: 1rem;
+  opacity: 0.9;
 }
 
-.auth-title {
-  color: #333;
+.login-title {
+  color: #ffffff;
+  font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.auth-subtitle {
-  color: #6c757d;
+.login-subtitle {
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.95rem;
+  margin-bottom: 0;
+}
+
+/* Formulario */
+.login-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  color: #ffffff;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-size: 0.9rem;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  color: rgba(102, 126, 234, 0.7);
+  z-index: 2;
+  font-size: 0.9rem;
 }
 
 .form-control {
-  border: 2px solid #e9ecef;
-  border-radius: 10px;
-  padding: 12px 15px;
+  width: 100%;
+  padding: 15px 15px 15px 45px !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  color: #ffffff !important;
+  font-size: 1rem;
   transition: all 0.3s ease;
-  border-left: none;
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 .form-control:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+  outline: none;
   transform: translateY(-1px);
 }
 
-.input-group-text {
-  border: 2px solid #e9ecef;
-  border-right: none;
-  border-radius: 10px 0 0 10px;
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 5px;
+  z-index: 2;
+  transition: color 0.3s ease;
 }
 
-.input-group .form-control:focus + .btn,
-.input-group .form-control:focus {
-  border-color: #667eea;
+.password-toggle:hover {
+  color: #ffffff;
 }
 
-.auth-submit-btn {
+/* Errores */
+.field-errors {
+  margin-top: 0.5rem;
+}
+
+.error-message {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border-left: 3px solid #ff6b6b;
+  margin-bottom: 0.25rem;
+}
+
+.custom-alert {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Checkbox personalizado */
+.form-check-container {
+  margin-bottom: 2rem;
+}
+
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  height: 20px;
+  width: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  margin-right: 0.75rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.custom-checkbox:hover .checkmark {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkmark {
+  background: rgba(102, 126, 234, 0.8);
+  border-color: rgba(102, 126, 234, 1);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkmark:after {
+  display: block;
+}
+
+/* Botón de login */
+.login-btn {
+  width: 100%;
+  padding: 16px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 12px;
-  padding: 15px;
+  color: #ffffff;
+  font-size: 1.1rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  cursor: pointer;
   transition: all 0.3s ease;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
 
-.auth-submit-btn:hover {
+.login-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
 }
 
-.btn-outline-primary {
-  border: 2px solid #667eea;
+.login-btn:active {
+  transform: translateY(0);
+}
+
+/* Footer del login */
+.login-footer {
+  text-align: center;
+}
+
+.register-prompt {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.register-prompt p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.register-link {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff !important;
+  text-decoration: none !important;
+  padding: 12px 24px;
   border-radius: 10px;
-  color: #667eea;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   font-weight: 600;
   transition: all 0.3s ease;
+  font-size: 0.9rem;
 }
 
-.btn-outline-primary:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: transparent;
+.register-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
+  color: #ffffff !important;
 }
 
-.hover-primary:hover {
-  color: #667eea !important;
-}
-
-.form-check-input:checked {
-  background-color: #667eea;
-  border-color: #667eea;
-}
-
-.alert {
-  border-radius: 10px;
-  border: none;
-}
-
-.auth-switch {
-  padding: 1rem;
-  background: rgba(102, 126, 234, 0.1);
-  border-radius: 15px;
-  margin-top: 1rem;
-}
-
-.btn-outline-secondary {
-  border-radius: 0 10px 10px 0;
-}
-
+/* Responsive */
 @media (max-width: 576px) {
-  .auth-card-body {
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .login-card {
     padding: 2rem 1.5rem;
+    border-radius: 20px;
+  }
+  
+  .login-title {
+    font-size: 1.6rem;
+  }
+  
+  .form-control {
+    padding: 12px 12px 12px 40px !important;
+  }
+  
+  .input-icon {
+    left: 12px;
+  }
+  
+  .password-toggle {
+    right: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    align-items: flex-start;
+    padding-top: 2rem;
   }
 }
 </style>
@@ -255,6 +446,17 @@ document.addEventListener('DOMContentLoaded', function() {
   if (firstEmptyField) {
     firstEmptyField.focus();
   }
+
+  // Animación de entrada
+  const loginCard = document.querySelector('.login-card');
+  loginCard.style.opacity = '0';
+  loginCard.style.transform = 'translateY(30px)';
+  
+  setTimeout(() => {
+    loginCard.style.transition = 'all 0.6s ease';
+    loginCard.style.opacity = '1';
+    loginCard.style.transform = 'translateY(0)';
+  }, 100);
 });
 </script>
 {% endblock %}
