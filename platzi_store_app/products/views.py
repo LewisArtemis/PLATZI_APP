@@ -5,6 +5,8 @@ from django.contrib import messages
 import requests
 import json
 from .forms import ProductForm
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 # Create your views here.
 base_url = "https://api.escuelajs.co/api/v1/"
@@ -109,7 +111,7 @@ def products_detail_view(request, pk):
     }
     return render(request, 'products/products_detail.html', context)
 
-
+@login_required(login_url='accounts:login')
 def products_add_view(request):
     """Vista para agregar un producto"""
     if request.method == 'POST':
@@ -155,6 +157,7 @@ def products_add_view(request):
 
 
 @csrf_exempt
+@login_required(login_url='accounts:login')
 def products_update_ajax(request, pk):
     """Vista AJAX para actualizar un producto"""
     if request.method == 'GET':
@@ -223,6 +226,7 @@ def products_update_ajax(request, pk):
 
 
 @csrf_exempt
+@login_required(login_url='accounts:login')
 def products_delete_ajax(request, pk):
     """Vista AJAX para eliminar un producto"""
     if request.method == 'GET':

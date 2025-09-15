@@ -7,6 +7,84 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+
+        /* Avatar del usuario animado */
+.user-avatar.pulse {
+    animation: pulse-avatar 2s infinite;
+}
+
+@keyframes pulse-avatar {
+    0% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    }
+}
+
+/* Efectos hover mejorados para el dropdown */
+.user-dropdown .dropdown-item.profile-item:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-left: 3px solid #667eea;
+}
+
+.user-dropdown .dropdown-item.logout-item:hover {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+    border-left: 3px solid #dc3545;
+    }
+
+        /* Indicador de usuario activo */
+        .navbar .user-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #28a745;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Responsive para el menú de usuario */
+        @media (max-width: 768px) {
+            .user-dropdown {
+                min-width: 200px;
+                margin-top: 10px;
+            }
+    
+        .user-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+        }
+
+        /* Animación para el cierre de sesión */
+        .logout-loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .logout-loading::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #dc3545;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 5px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         body {
             background: linear-gradient(135deg, #000000ff 0%, #09398bff 25%, #4f79a4 45%, #000000ff 75%, #000000ff 100%);
             min-height: 100vh;
@@ -42,6 +120,79 @@
         
         .nav-link:hover {
             color: rgba(147, 197, 253, 1) !important;
+        }
+        
+        /* Estilos para el menú de usuario */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.05);
+            border-color: rgba(147, 197, 253, 0.5);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .user-dropdown {
+            min-width: 250px;
+            border: none;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .user-dropdown .dropdown-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .user-dropdown .dropdown-item {
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            border: none;
+            color: #333;
+        }
+        
+        .user-dropdown .dropdown-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .user-dropdown .dropdown-item i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .user-dropdown .dropdown-divider {
+            margin: 0;
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+        
+        .logout-item {
+            color: #dc3545 !important;
+        }
+        
+        .logout-item:hover {
+            background: rgba(220, 53, 69, 0.1) !important;
+            color: #dc3545 !important;
         }
         
         .card {
@@ -167,6 +318,22 @@
         .text-muted {
             color: rgba(255, 255, 255, 0.6) !important;
         }
+
+        /* Animaciones */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-dropdown.show {
+            animation: slideDown 0.3s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -191,6 +358,52 @@
                             <i class="fas fa-shopping-bag me-1"></i>Productos
                         </a>
                     </li>
+                    
+                    <!-- Menú de usuario autenticado -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false" title="Menú de usuario">
+                                {{ user.first_name|first|default:user.username|first|upper }}
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end user-dropdown">
+                                <li class="dropdown-header">
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-3" style="width: 35px; height: 35px; font-size: 14px;">
+                                            {{ user.first_name|first|default:user.username|first|upper }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ user.first_name|default:user.username }}</div>
+                                            <small class="opacity-75">{{ user.email }}</small>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="showProfileModal()">
+                                        <i class="fas fa-user"></i>Mi Perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'products:products_list' %}">
+                                        <i class="fas fa-shopping-bag"></i>Mis Productos
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item logout-item" href="{% url 'accounts:logout' %}" onclick="return confirmLogout()">
+                                        <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <!-- Usuario no autenticado -->
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{% url 'accounts:login' %}">
+                                <i class="fas fa-user me-1"></i>Iniciar Sesión
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -201,7 +414,7 @@
         <div class="container mt-5 pt-4">
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
+                    <i class="fas fa-info-circle me-2"></i>{{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
@@ -214,6 +427,63 @@
         {% endblock %}
     </main>
 
+    <!-- Modal de Perfil de Usuario -->
+    {% if user.is_authenticated %}
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border: none; border-radius: 20px;">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 20px 20px 0 0;">
+                    <h5 class="modal-title text-white">
+                        <i class="fas fa-user me-2"></i>Mi Perfil
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 32px;">
+                            {{ user.first_name|first|default:user.username|first|upper }}
+                        </div>
+                        <h4 class="text-dark">{{ user.first_name }} {{ user.last_name|default:"" }}</h4>
+                        <p class="text-muted">@{{ user.username }}</p>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label text-dark fw-bold">
+                                <i class="fas fa-envelope text-primary me-2"></i>Email
+                            </label>
+                            <p class="form-control-plaintext bg-light rounded px-3 py-2">{{ user.email }}</p>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-dark fw-bold">
+                                <i class="fas fa-user text-primary me-2"></i>Nombre
+                            </label>
+                            <p class="form-control-plaintext bg-light rounded px-3 py-2">{{ user.first_name|default:"No especificado" }}</p>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-dark fw-bold">
+                                <i class="fas fa-user text-primary me-2"></i>Apellido
+                            </label>
+                            <p class="form-control-plaintext bg-light rounded px-3 py-2">{{ user.last_name|default:"No especificado" }}</p>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-dark fw-bold">
+                                <i class="fas fa-calendar text-primary me-2"></i>Miembro desde
+                            </label>
+                            <p class="form-control-plaintext bg-light rounded px-3 py-2">{{ user.date_joined|date:"d M Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Footer -->
     <footer class="mt-5 py-4 text-center text-white">
         <div class="container">
@@ -222,5 +492,223 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Función para mostrar el modal de perfil
+        function showProfileModal() {
+            {% if user.is_authenticated %}
+                const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+                profileModal.show();
+            {% endif %}
+        }
+
+        // Función para confirmar el logout
+        function confirmLogout() {
+            return confirm('¿Estás seguro que deseas cerrar sesión?');
+        }
+
+        // Auto-cerrar alerts después de 5 segundos
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert:not(.alert-danger)');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    if (alert) {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+    // Referencias a elementos
+    const userAvatar = document.querySelector('.user-avatar');
+    const logoutLinks = document.querySelectorAll('.logout-item');
+    
+    // Función para mostrar el modal de perfil
+    window.showProfileModal = function() {
+        const profileModal = document.getElementById('profileModal');
+        if (profileModal) {
+            const modal = new bootstrap.Modal(profileModal);
+            modal.show();
+        }
+    };
+
+    // Función para confirmar el logout con animación
+    window.confirmLogout = function() {
+        const confirmDialog = confirm('¿Estás seguro que deseas cerrar sesión?');
+        
+        if (confirmDialog) {
+            // Agregar clase de loading al enlace
+            const logoutLink = event.target.closest('.logout-item');
+            if (logoutLink) {
+                logoutLink.classList.add('logout-loading');
+                logoutLink.innerHTML = '<i class="fas fa-sign-out-alt"></i>Cerrando sesión...';
+            }
+            
+            // Mostrar mensaje de loading
+            showNotification('Cerrando sesión...', 'info');
+            
+            return true;
+        }
+        return false;
+    };
+
+    // Función para mostrar notificaciones
+    function showNotification(message, type = 'info') {
+        // Crear elemento de notificación
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            <i class="fas fa-info-circle me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove después de 3 segundos
+        setTimeout(() => {
+            if (notification && notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+
+    // Animación del avatar cuando se hace hover
+    if (userAvatar) {
+        userAvatar.addEventListener('mouseenter', function() {
+            this.classList.add('pulse');
+        });
+        
+        userAvatar.addEventListener('mouseleave', function() {
+            this.classList.remove('pulse');
+        });
+    }
+
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', function(event) {
+        const userDropdown = document.querySelector('.user-dropdown');
+        const userAvatarElement = document.querySelector('.user-avatar');
+        
+        if (userDropdown && userAvatarElement) {
+            if (!userDropdown.contains(event.target) && !userAvatarElement.contains(event.target)) {
+                const dropdown = bootstrap.Dropdown.getInstance(userAvatarElement);
+                if (dropdown) {
+                    dropdown.hide();
+                }
+            }
+        }
+    });
+
+    // Auto-cerrar alerts después de 5 segundos (excepto errores)
+    const alerts = document.querySelectorAll('.alert:not(.alert-danger)');
+    alerts.forEach(function(alert) {
+        setTimeout(function() {
+            if (alert && alert.parentNode) {
+                const bsAlert = bootstrap.Alert.getInstance(alert);
+                if (bsAlert) {
+                    bsAlert.close();
+                } else {
+                    alert.remove();
+                }
+            }
+        }, 5000);
+    });
+
+    // Mejorar la experiencia de los formularios
+    const forms = document.querySelectorAll('form');
+    forms.forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn && !submitBtn.disabled) {
+                // Agregar estado de loading al botón
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+                
+                // Restaurar el botón después de 5 segundos (por si falla el submit)
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }, 5000);
+            }
+        });
+    });
+
+    // Función para validar campos en tiempo real
+    const inputs = document.querySelectorAll('input[required]');
+    inputs.forEach(function(input) {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+    });
+
+    function validateField(field) {
+        const value = field.value.trim();
+        const fieldGroup = field.closest('.mb-3');
+        let existingFeedback = fieldGroup.querySelector('.invalid-feedback');
+        
+        // Remover feedback existente
+        if (existingFeedback) {
+            existingFeedback.remove();
+        }
+        
+        field.classList.remove('is-invalid', 'is-valid');
+        
+        if (field.hasAttribute('required') && value === '') {
+            addFieldError(field, 'Este campo es obligatorio');
+        } else if (field.type === 'email' && value && !isValidEmail(value)) {
+            addFieldError(field, 'Ingresa un email válido');
+        } else if (field.name === 'username' && value && value.length < 3) {
+            addFieldError(field, 'El nombre de usuario debe tener al menos 3 caracteres');
+        } else if (field.type === 'password' && value && value.length < 8) {
+            addFieldError(field, 'La contraseña debe tener al menos 8 caracteres');
+        } else if (value) {
+            field.classList.add('is-valid');
+        }
+    }
+
+    function addFieldError(field, message) {
+        field.classList.add('is-invalid');
+        const feedback = document.createElement('div');
+        feedback.className = 'invalid-feedback';
+        feedback.textContent = message;
+        field.parentNode.appendChild(feedback);
+    }
+
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // Función para copiar información del perfil
+    window.copyProfileInfo = function(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            showNotification('Información copiada al portapapeles', 'success');
+        }).catch(function() {
+            showNotification('No se pudo copiar la información', 'error');
+        });
+    };
+
+    // Mejorar la accesibilidad del menú
+    if (userAvatar) {
+        userAvatar.setAttribute('role', 'button');
+        userAvatar.setAttribute('aria-haspopup', 'true');
+        userAvatar.setAttribute('aria-expanded', 'false');
+        
+        // Soporte para teclado
+        userAvatar.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                this.click();
+            }
+        });
+    }
+
+    console.log('🚀 Sistema de usuario cargado correctamente');
+});
+    </script>
+
 </body>
 </html>

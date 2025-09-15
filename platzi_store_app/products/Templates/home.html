@@ -269,16 +269,12 @@
                         <div class="card card-enhanced h-100 p-4">
                             <div class="card-body text-center">
                                 <i class="fas fa-code fa-3x text-success mb-3 animated-icon"></i>
-                                <h4 class="text-dark">Tecnologías Utilizadas</h4>
-                                <p class="text-muted">Este proyecto utiliza Django como backend y consume APIs externas para mostrar datos dinámicos.</p>
-                                <div class="mt-3 mb-3">
-                                    <span class="badge bg-primary me-2 animate-pulse">Django</span>
-                                    <span class="badge bg-success me-2 animate-pulse animate-delay-100">API REST</span>
-                                    <span class="badge bg-info animate-pulse animate-delay-200">Bootstrap</span>
-                                </div>
-                                <button class="btn btn-success btn-enhanced" disabled>
-                                    <i class="fas fa-rocket me-2"></i>Tecnología Moderna
-                                </button>
+                                <h4 class="text-dark">Registrese para iniciar sesion. </h4>
+                                <p class="text-muted">Crea una cuenta para registrarte en el sitio.</p>
+
+                                <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-enhanced">
+                                    <i class="fas fa-arrow-right me-2"></i>Registrarse
+                                </a>
                             </div>
                         </div>
                     </div>
