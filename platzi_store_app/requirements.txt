@@ -7,12 +7,10 @@ requests == 2.32.5
 # Django REST Framework para crear APIs
 djangorestframework
 
-# Para documentación automática de la API (opcional pero recomendado)
-drf-spectacular==0.26.5
 
-# Para validación adicional y utilidades
-python-decouple==3.8  # Para variables de entorno
 Pillow==10.1.0  # Si necesitas manejo de imágenes
+
+psycopg2-binary
 
 #para instalar las dependencias a ejecutar:
 #pip install -r requirements.txt
