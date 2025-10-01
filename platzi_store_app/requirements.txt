@@ -1,16 +1,16 @@
 # Instalacion de las dependencias
 
-Django == 5.2.6
-requests == 2.32.5
+Django 
+requests 
 
 
 # Django REST Framework para crear APIs
-djangorestframework
+djangorestframework 
 
 
-Pillow==10.1.0  # Si necesitas manejo de imágenes
+Pillow
 
-psycopg2-binary
+psycopg2-binary 
 
 #para instalar las dependencias a ejecutar:
 #pip install -r requirements.txt
